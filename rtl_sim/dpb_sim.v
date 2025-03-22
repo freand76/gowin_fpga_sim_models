@@ -118,7 +118,7 @@ module DPB
                end
              else if (CEB & !WREB)
                begin
-                  DOA <= {{(D_PORT_WIDTH - BIT_WIDTH_0){1'b0} } , mem[ADB[13:BIT_ADDR_LENGTH]]};
+                  DOB <= {{(D_PORT_WIDTH - BIT_WIDTH_0){1'b0} } , mem[ADB[13:BIT_ADDR_LENGTH]]};
                end
              else if (CEA & WREB)
                begin

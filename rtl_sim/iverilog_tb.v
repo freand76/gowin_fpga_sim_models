@@ -65,18 +65,73 @@ module iverilog_tb;
             clkb = ~clkb;
      end
 
-   initial
-     begin
-        reseta = 1;
-        resetb = 1;
-        #100;
-        $display("Release Reset");
-        reseta = 0;
-        resetb = 0;
-     end
+   task reset;
+      begin
+         $display("%0t: Assert Reset", $time);
+         reseta = 1;
+         resetb = 1;
+         #100;
+         $display("%0t: Deassert Reset", $time);
+         reseta = 0;
+         resetb = 0;
+      end
+   endtask // reset
+
+   task write_8bit;
+      input [7:0] port;
+      input  [10:0] address;
+      input [7:0]  data;
+      begin
+         if (port == "A")
+           begin
+              wait(clka == 1'b0);
+              wrea = 1;
+              dia = data;
+              ada = { address, 3'b000 };
+              wait(clka == 1'b1);
+              wait(clka == 1'b0);
+              wrea = 0;
+           end
+         else
+           begin
+              wait(clkb == 1'b0);
+              wreb = 1;
+              dib = data;
+              adb = { address, 3'b000 };
+              wait(clkb == 1'b1);
+              wait(clkb == 1'b0);
+              wreb = 0;
+           end
+      end
+   endtask // write_8bit
+
+   task read_8bit;
+      input [7:0] port;
+      input  [10:0] address;
+      begin
+         if (port == "A")
+           begin
+              wait(clka == 1'b0);
+              wrea = 0;
+              ada = { address, 3'b000 };
+              wait(clka == 1'b1);
+              wait(clka == 1'b0);
+           end
+         else
+           begin
+              wait(clkb == 1'b0);
+              wreb = 0;
+              adb = { address, 3'b000 };
+              wait(clkb == 1'b1);
+              wait(clkb == 1'b0);
+           end
+      end
+   endtask // read_8bit
 
    initial
      begin
+        $monitor("%0t: DOA %x DOB %x", $time, doa, dob);
+
         ocea = 1'b1;
         oceb = 1'b1;
         cea = 1'b1;
@@ -90,6 +145,38 @@ module iverilog_tb;
         blksela = 3'b000;
         blkselb = 3'b000;
         #1000;
+
+        reset();
+
+        read_8bit("A", 0);
+        read_8bit("B", 0);
+
+        assert (doa == 0);
+        assert (dob == 0);
+
+        write_8bit("A", 0, 8'hfe);
+        write_8bit("B", 1, 8'hde);
+        write_8bit("A", 2, 8'hbe);
+        write_8bit("B", 3, 8'hda);
+
+        read_8bit("A", 1);
+        read_8bit("B", 2);
+
+        assert (doa == 8'hde);
+        assert (dob == 8'hbe);
+
+        read_8bit("A", 3);
+        read_8bit("B", 0);
+
+        assert (doa == 8'hda);
+        assert (dob == 8'hfe);
+
+        reset();
+
+        read_8bit("A", 0);
+        read_8bit("B", 0);
+
+        #1000
         $finish;
      end
 
