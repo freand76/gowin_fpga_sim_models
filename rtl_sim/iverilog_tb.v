@@ -86,7 +86,7 @@ module iverilog_tb;
            begin
               wait(clka == 1'b0);
               wrea = 1;
-              dia = data;
+              dia = { 8'h0, data };
               ada = { address, 3'b000 };
               wait(clka == 1'b1);
               wait(clka == 1'b0);
@@ -96,7 +96,7 @@ module iverilog_tb;
            begin
               wait(clkb == 1'b0);
               wreb = 1;
-              dib = data;
+              dib = { 8'h0, data };
               adb = { address, 3'b000 };
               wait(clkb == 1'b1);
               wait(clkb == 1'b0);
@@ -151,8 +151,8 @@ module iverilog_tb;
         read_8bit("A", 0);
         read_8bit("B", 0);
 
-        assert (doa == 0);
-        assert (dob == 0);
+        assert (doa == 16'h0);
+        assert (dob == 16'h0);
 
         write_8bit("A", 0, 8'hfe);
         write_8bit("B", 1, 8'hde);
@@ -162,14 +162,30 @@ module iverilog_tb;
         read_8bit("A", 1);
         read_8bit("B", 2);
 
-        assert (doa == 8'hde);
-        assert (dob == 8'hbe);
+        assert (doa == 16'hde);
+        assert (dob == 16'hbe);
 
         read_8bit("A", 3);
-        read_8bit("B", 0);
+        read_8bit("B", 3);
 
-        assert (doa == 8'hda);
-        assert (dob == 8'hfe);
+        assert (doa == 16'hda);
+        assert (dob == 16'hda);
+
+        ada = 14'h0;
+        adb = 14'h0;
+
+        assert (doa == 16'hda);
+        assert (dob == 16'hda);
+
+        wait(clka == 1'b0);
+        wait(clkb == 1'b0);
+        wait(clka == 1'b1);
+        wait(clkb == 1'b1);
+        wait(clka == 1'b0);
+        wait(clkb == 1'b0);
+
+        assert (doa == 16'hfe);
+        assert (dob == 16'hfe);
 
         reset();
 

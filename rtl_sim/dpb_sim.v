@@ -90,7 +90,7 @@ module DPB
                   int idx;
                   for (idx = 0; idx < MEM_LENGTH-1; idx++)
                     begin
-                       mem[idx] <= {BIT_WIDTH_0{1'b0}};
+                       mem[idx] = {BIT_WIDTH_0{1'b0}};
                     end
                end
              else if (CEA & !WREA)
@@ -99,7 +99,7 @@ module DPB
                end
              else if (CEA & WREA)
                begin
-                  mem[ADA[13:BIT_ADDR_LENGTH]] <= DIA[BIT_WIDTH_0-1:0];
+                  mem[ADA[13:BIT_ADDR_LENGTH]] = DIA[BIT_WIDTH_0-1:0];
                end
           end
      end
@@ -113,7 +113,7 @@ module DPB
                   int idx;
                   for (idx = 0; idx < MEM_LENGTH-1; idx++)
                     begin
-                       mem[idx] <= {BIT_WIDTH_0{1'b0}};
+                       mem[idx] = {BIT_WIDTH_0{1'b0}};
                     end
                end
              else if (CEB & !WREB)
@@ -122,7 +122,7 @@ module DPB
                end
              else if (CEA & WREB)
                begin
-                  mem[ADB[13:BIT_ADDR_LENGTH]] <= DIB[BIT_WIDTH_0-1:0];
+                  mem[ADB[13:BIT_ADDR_LENGTH]] = DIB[BIT_WIDTH_0-1:0];
                end
           end
      end

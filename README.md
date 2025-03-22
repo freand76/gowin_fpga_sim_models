@@ -9,4 +9,4 @@
  - READ_MODE1 must be 0 (bypass)
  - WRITE_MODE0 must be 0 (normal)
  - WRITE_MODE1 must be 0 (normal)
-
+ - Pre-initialization not implemnted
